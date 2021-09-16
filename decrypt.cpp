@@ -42,120 +42,134 @@ void decrypt(const Key &c, Key *table)
     minus1lol++;
     std::map<Key, Key> map2;
     b = a;
+    b -= minus1lol ;
     Key temp_b{};
     if (N % 2 == 0)
         for (int i = 0; i < std::pow(2, static_cast<int>(N / 2)); i++)
         {
 
-            b += (saved.rbegin()->first - minus1lol);
             temp_b = b;
-            for (int i = 0; i < C / 2; i++)
+            for (int var = 0; var < C / 2; var++)
             {
-                temp_b.digit[i] = 0;
+                temp_b.digit[var] = 0;
             }
 
-            std::cout << "kombination " << i << "   b\t" << b << "temp_b" << temp_b << std::endl;
-            map2[b] = subset_sum(b, table);
+            std::cout << "kombination " << i << "   b\t" << b << "temp_b " << temp_b << std::endl;
+           // map2[b] = subset_sum(b, table);
 
-           // map2[subset_sum(b, table)] = b;
+            map2[subset_sum(temp_b, table)] = temp_b;
+            b += (saved.rbegin()->first - minus1lol);
         }
     else
     {
         for (int i = 0; i < std::pow(2, static_cast<int>(N / 2) + 1); i++)
         {
-
-            b += (saved.rbegin()->first - minus1lol);
-            temp_b = b;
-            for (int i = (C/2)+1; i < C; i++)
+            std::cout << "kombination " << i << "   b\t" << b << std::endl;
+            map2[b] = subset_sum(b, table);
+            if(i < 3)
             {
-                temp_b.digit[i] = 0;
+                b += minus1lol;
             }
-            switch (temp_b.digit[C/2])
+            else
             {
-            case 1 :
-                temp_b.digit[C/2] = 0;
+                b += (map2.begin()++->first);
+            }
+            
+            
+            /* temp_b = b;
+            for (int var = (C / 2) + 1; var < C; var++)
+            {
+                temp_b.digit[var] = 0;
+            }
+            switch (temp_b.digit[C / 2])
+            {
+            case 1:
+                temp_b.digit[C / 2] = 0;
                 break;
-            case 2 :
-                temp_b.digit[C/2] = 0;
+            case 2:
+                temp_b.digit[C / 2] = 0;
                 break;
-            case 3 :
-                temp_b.digit[C/2] = 0;
+            case 3:
+                temp_b.digit[C / 2] = 0;
                 break;
-            case 5 :
-                temp_b.digit[C/2] = 4;
+            case 5:
+                temp_b.digit[C / 2] = 4;
                 break;
-            case 6 :
-                temp_b.digit[C/2] = 4;
+            case 6:
+                temp_b.digit[C / 2] = 4;
                 break;
-            case 7 :
-                temp_b.digit[C/2] = 4;
+            case 7:
+                temp_b.digit[C / 2] = 4;
                 break;
-            case 9 :
-                temp_b.digit[C/2] = 8;
+            case 9:
+                temp_b.digit[C / 2] = 8;
                 break;
-            case 10 :
-                temp_b.digit[C/2] = 8;
+            case 10:
+                temp_b.digit[C / 2] = 8;
                 break;
-            case 11 :
-                temp_b.digit[C/2] = 8;
+            case 11:
+                temp_b.digit[C / 2] = 8;
                 break;
-            case 13 :
-                temp_b.digit[C/2] = 12;
+            case 13:
+                temp_b.digit[C / 2] = 12;
                 break;
-            case 14 :
-                temp_b.digit[C/2] = 12;
+            case 14:
+                temp_b.digit[C / 2] = 12;
                 break;
-            case 15 :
-                temp_b.digit[C/2] = 12;
+            case 15:
+                temp_b.digit[C / 2] = 12;
                 break;
-            case 17 :
-                temp_b.digit[C/2] = 16;
+            case 17:
+                temp_b.digit[C / 2] = 16;
                 break;
-            case 18 :
-                temp_b.digit[C/2] = 16;
+            case 18:
+                temp_b.digit[C / 2] = 16;
                 break;
-            case 19 :
-                temp_b.digit[C/2] = 16;
+            case 19:
+                temp_b.digit[C / 2] = 16;
                 break;
-            case 21 :
-                temp_b.digit[C/2] = 20;
+            case 21:
+                temp_b.digit[C / 2] = 20;
                 break;
-            case 22 :
-                temp_b.digit[C/2] = 20;
+            case 22:
+                temp_b.digit[C / 2] = 20;
                 break;
-            case 23 :
-                temp_b.digit[C/2] = 20;
+            case 23:
+                temp_b.digit[C / 2] = 20;
                 break;
-            case 25 :
-                temp_b.digit[C/2] = 24;
+            case 25:
+                temp_b.digit[C / 2] = 24;
                 break;
-            case 26 :
-                temp_b.digit[C/2] = 24;
+            case 26:
+                temp_b.digit[C / 2] = 24;
                 break;
-            case 27 :
-                temp_b.digit[C/2] = 24;
+            case 27:
+                temp_b.digit[C / 2] = 24;
                 break;
-            case 29 :
-                temp_b.digit[C/2] = 28;
+            case 29:
+                temp_b.digit[C / 2] = 28;
                 break;
-            case 30 :
-                temp_b.digit[C/2] = 28;
+            case 30:
+                temp_b.digit[C / 2] = 28;
                 break;
-            case 31 :
-                temp_b.digit[C/2] = 28;
+            case 31:
+                temp_b.digit[C / 2] = 28;
                 break;
             default:
                 break;
             }
 
-            //temp_b.digit[C/2] = 
-         //   std::cout << "kombination " << i << "   b\t" << b << std::endl;
-              std::cout << "kombination " << i << "   b\t" << b << "\t temp_b" << temp_b << std::endl;
-            map2[b] = subset_sum(b, table);
-            //map2[subset_sum(b, table)] = ;
+            //temp_b.digit[C/2] =
+            //   std::cout << "kombination " << i << "   b\t" << b << std::endl;
+            std::cout << "kombination " << i << "   b\t" << b << "\t temp_b " << temp_b << std::endl;
+            //map2[b] = subset_sum(b, table);
+            map2[subset_sum(temp_b, table)] = temp_b;
+            //b += (saved.rbegin()->first - minus1lol);
+            b += (saved.rbegin()->first); */
+
         }
     }
-    //11111 11111 11 | 101 01010 10101 
+    //11111 11111 11 | 101 01010 10101
     std::cout << "sista i a " << saved.rbegin()->first << std::endl;
     std::cout << saved.rbegin()->first + minus1lol << std::endl;
     std::cout << saved.rbegin()->first + minus1lol + saved.rbegin()->first << std::endl;
@@ -193,8 +207,25 @@ void decrypt(const Key &c, Key *table)
         if (subset_sum(i.first + map2[diffrence_between_c_and_a], table) == c)
         {
             std::cout << "Yeay " << abc++ << std::endl;
+            cracked.push_back(i.first + map2[diffrence_between_c_and_a]);
         }
     }
+    for (auto &&i : cracked)
+    {
+        std::cout << i << std::endl;
+    }
+
+    /*
+
+    passw 15  0 18 18 22 0111100000100101001010110
+    p3csw 15 29  2 18 22 0111111101000101001010110
+    p35cw 15 29 31  2 22 0111111101111110001010110
+    p355g 15 29 31 31  6 0111111101111111111100110
+    2dcsw 28  3  2 18 22 1110000011000101001010110
+    2d5cw 28  3 31  2 22 1110000011111110001010110
+    2d55g 28  3 31 31  6 1110000011111111111100110
+    2qssw 28 16 18 18 22 1110010000100101001010110
+    **/
 
     // c - a
     /*
