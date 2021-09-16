@@ -21,8 +21,7 @@ void decrypt(const Key &c, Key *table)
     Key b{};
 
     std::cout << "a\t" << a << std::endl;
-    std::cout << "b\t" << b << "\n"
-              << std::endl;
+    std::cout << "b\t" << b << "\n" << std::endl;
     //Vi räknar ut all kopmbinationer för a
     for (int i = 0; i < std::pow(2, static_cast<int>(N / 2)); i++)
     {
@@ -55,10 +54,8 @@ void decrypt(const Key &c, Key *table)
             }
 
             std::cout << "kombination " << i << "   b\t" << b << "temp_b " << temp_b << std::endl;
-           // map2[b] = subset_sum(b, table);
-
             map2[subset_sum(temp_b, table)] = temp_b;
-            b += (saved.rbegin()->first - minus1lol);
+            b += a;
         }
     else
     {
@@ -150,8 +147,7 @@ void decrypt(const Key &c, Key *table)
 
             std::cout << "kombination " << i << "   b\t" << b << "\t temp_b " << temp_b << std::endl;
             map2[subset_sum(temp_b, table)] = temp_b;
-            b += (saved.rbegin()->first);
-
+            b += a;
         }
     }
     //11111 11111 11 | 101 01010 10101
@@ -189,8 +185,9 @@ void decrypt(const Key &c, Key *table)
         // passw
         Key diffrence_between_c_and_a = c - i.second;
 
-        if (subset_sum(i.first + map2[diffrence_between_c_and_a], table) == c)
+        if (subset_sum(map2[diffrence_between_c_and_a] + i.first, table) == c)
         {
+            std::cout << "Difference betwwen c and a " << diffrence_between_c_and_a << std::endl;
             std::cout << "Yeay " << abc++ << std::endl;
             cracked.push_back(i.first + map2[diffrence_between_c_and_a]);
         }
@@ -231,10 +228,6 @@ c - a = b
     1000
     1100
 */
-
-    /* for (int i{0}; i < N; i++)
-        to << hashed.bit(i);
-     */
 }
 
 int main(int argc, char *argv[])

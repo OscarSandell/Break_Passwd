@@ -14,7 +14,6 @@ int main(int argc, char* argv[]) {
 
     // Hashed password.
     Key hashed{argv[1]};
-    cout << "HEJ " << hashed << " dååå" << endl;
     // Table.
     Key table[N];
 
