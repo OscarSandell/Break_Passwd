@@ -49,7 +49,7 @@ void decrypt(const Key &c, Key *table)
         {
 
             temp_b = b;
-            for (int var = 0; var < C / 2; var++)
+            for (int var = C/2; var < C; var++)
             {
                 temp_b.digit[var] = 0;
             }
@@ -64,19 +64,8 @@ void decrypt(const Key &c, Key *table)
     {
         for (int i = 0; i < std::pow(2, static_cast<int>(N / 2) + 1); i++)
         {
-            std::cout << "kombination " << i << "   b\t" << b << std::endl;
-            map2[b] = subset_sum(b, table);
-            if(i < 3)
-            {
-                b += minus1lol;
-            }
-            else
-            {
-                b += (map2.begin()++->first);
-            }
-            
-            
-            /* temp_b = b;
+
+            temp_b = b;
             for (int var = (C / 2) + 1; var < C; var++)
             {
                 temp_b.digit[var] = 0;
@@ -159,13 +148,9 @@ void decrypt(const Key &c, Key *table)
                 break;
             }
 
-            //temp_b.digit[C/2] =
-            //   std::cout << "kombination " << i << "   b\t" << b << std::endl;
             std::cout << "kombination " << i << "   b\t" << b << "\t temp_b " << temp_b << std::endl;
-            //map2[b] = subset_sum(b, table);
             map2[subset_sum(temp_b, table)] = temp_b;
-            //b += (saved.rbegin()->first - minus1lol);
-            b += (saved.rbegin()->first); */
+            b += (saved.rbegin()->first);
 
         }
     }
