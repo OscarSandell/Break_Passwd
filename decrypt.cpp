@@ -14,32 +14,37 @@ Decrypt funktion
 void decrypt(const Key &c, Key *table)
 {
     //Vi skapar en map för a som håller koll på a:s nycklar och de hashade lösenorden för de nycklarna
-    std::map<Key, Key> saved;
+    std::map<Key, Key> a_saved;
     std::vector<Key> cracked{};
 
     Key a{};
     Key b{};
 
     std::cout << "a\t" << a << std::endl;
-    std::cout << "b\t" << b << "\n" << std::endl;
+    std::cout << "b\t" << b << "\n"
+              << std::endl;
     //Vi räknar ut all kopmbinationer för a
+    /*
+    //Här är nyckeln 1,2,3,4,5 och elementet är 1 4 9 16 25
     for (int i = 0; i < std::pow(2, static_cast<int>(N / 2)); i++)
     {
         std::cout << "kombination " << i << "   a\t" << a << std::endl;
-        saved[a] = subset_sum(a, table);
+        a_saved[a] = subset_sum(a, table);
+        a++;
+    }*/
+    //Här är nyckeln 1 4 9 16 25 och elementen är 1 2 3 4 5
+    for (int i = 0; i < std::pow(2, static_cast<int>(N / 2)); i++)
+    {
+        std::cout << "kombination " << i << "   a\t" << a << std::endl;
+        a_saved[subset_sum(a, table)] = a;
         a++;
     }
 
-    /*
-    for (auto &&i : saved)
-    {
-        std::cout << "Nyckeln " << i.first << "\nhashade " << i.second << "\n\n";
-    }
-    */
     //Här vill vi räkna ut kombinationerna för b
     Key minus1lol{};
     minus1lol++;
     std::map<Key, Key> map2;
+    /*
     b = a;
     b -= minus1lol ;
     Key temp_b{};
@@ -150,10 +155,7 @@ void decrypt(const Key &c, Key *table)
             b += a;
         }
     }
-    //11111 11111 11 | 101 01010 10101
-    std::cout << "sista i a " << saved.rbegin()->first << std::endl;
-    std::cout << saved.rbegin()->first + minus1lol << std::endl;
-    std::cout << saved.rbegin()->first + minus1lol + saved.rbegin()->first << std::endl;
+    */
 
     /* 000000000000100000000000 - 1
     000000000000011111111111
@@ -169,29 +171,173 @@ void decrypt(const Key &c, Key *table)
     000000000111 000000000000
     000000001000 000000000000 */
 
-    /*     else
-    {
-        for (int i = static_cast<int>((N / 2)); i < std::pow(2, static_cast<int>(N); i++)
-        {
-            std::cout << "kombination " << i << "   a\t" << a++ << std::endl;
-            saved[a] = subset_sum(a, table);
-        }
-    } */
     //Här vill vi kolla om a:s nyckel + b:nyckel hashat blir c där vi använder map2 för att  spara b:s hashade lösenord som nyckel och det ohasade som elementet
     int abc{};
-    for (auto &&i : saved)
+    /*
+    for (auto const &a_pair : a_saved)
     {
         //njjhd
         // passw
-        Key diffrence_between_c_and_a = c - i.second;
+        Key b_hashed = c - a_pair.second;
 
-        if (subset_sum(map2[diffrence_between_c_and_a] + i.first, table) == c)
+        if (subset_sum(map2[b_hashed] + a_pair.first, table) == c)
         {
-            std::cout << "Difference betwwen c and a " << diffrence_between_c_and_a << std::endl;
+            std::cout << "Difference betwwen c and a " << b_hashed << std::endl;
             std::cout << "Yeay " << abc++ << std::endl;
-            cracked.push_back(i.first + map2[diffrence_between_c_and_a]);
+            cracked.push_back(a_pair.first + map2[b_hashed]);
         }
     }
+    */
+
+    //-----------------------------------testar
+
+    b = a;
+    b -= minus1lol;
+    Key temp_b{};
+    if (N % 2 == 0)
+        for (int i = 0; i < std::pow(2, static_cast<int>(N / 2)); i++)
+        {
+
+            temp_b = b;
+            for (int var = C / 2; var < C; var++)
+            {
+                temp_b.digit[var] = 0;
+            }
+
+            std::cout << "kombination " << i << "   b\t" << b << "temp_b " << temp_b << std::endl;
+            //   map2[subset_sum(temp_b, table)] = temp_b;
+            Key a_hashed = c - subset_sum(temp_b, table);
+
+            if (subset_sum(a_saved[a_hashed] + temp_b, table) == c)
+            {
+                std::cout << "Difference betwwen c and b " << a_hashed << std::endl;
+                std::cout << "Yeay " << abc++ << std::endl;
+                cracked.push_back(a_saved[a_hashed] + temp_b);
+            }
+            b += a;
+        }
+    else
+    {
+        for (int i = 0; i < std::pow(2, static_cast<int>(N / 2) + 1); i++)
+        {
+
+            temp_b = b;
+            for (int var = (C / 2) + 1; var < C; var++)
+            {
+                temp_b.digit[var] = 0;
+            }
+            switch (temp_b.digit[C / 2])
+            {
+            case 1:
+                temp_b.digit[C / 2] = 0;
+                break;
+            case 2:
+                temp_b.digit[C / 2] = 0;
+                break;
+            case 3:
+                temp_b.digit[C / 2] = 0;
+                break;
+            case 5:
+                temp_b.digit[C / 2] = 4;
+                break;
+            case 6:
+                temp_b.digit[C / 2] = 4;
+                break;
+            case 7:
+                temp_b.digit[C / 2] = 4;
+                break;
+            case 9:
+                temp_b.digit[C / 2] = 8;
+                break;
+            case 10:
+                temp_b.digit[C / 2] = 8;
+                break;
+            case 11:
+                temp_b.digit[C / 2] = 8;
+                break;
+            case 13:
+                temp_b.digit[C / 2] = 12;
+                break;
+            case 14:
+                temp_b.digit[C / 2] = 12;
+                break;
+            case 15:
+                temp_b.digit[C / 2] = 12;
+                break;
+            case 17:
+                temp_b.digit[C / 2] = 16;
+                break;
+            case 18:
+                temp_b.digit[C / 2] = 16;
+                break;
+            case 19:
+                temp_b.digit[C / 2] = 16;
+                break;
+            case 21:
+                temp_b.digit[C / 2] = 20;
+                break;
+            case 22:
+                temp_b.digit[C / 2] = 20;
+                break;
+            case 23:
+                temp_b.digit[C / 2] = 20;
+                break;
+            case 25:
+                temp_b.digit[C / 2] = 24;
+                break;
+            case 26:
+                temp_b.digit[C / 2] = 24;
+                break;
+            case 27:
+                temp_b.digit[C / 2] = 24;
+                break;
+            case 29:
+                temp_b.digit[C / 2] = 28;
+                break;
+            case 30:
+                temp_b.digit[C / 2] = 28;
+                break;
+            case 31:
+                temp_b.digit[C / 2] = 28;
+                break;
+            default:
+                break;
+            }
+
+            //std::cout << "kombination " << i << "   b\t" << b << "\t temp_b " << temp_b << std::endl;
+            // map2[subset_sum(temp_b, table)] = temp_b;
+
+            Key a_hashed = c - subset_sum(temp_b, table);
+
+            if (subset_sum(a_saved[a_hashed] + temp_b, table) == c)
+            {
+               // std::cout << "Difference betwwen c and b " << a_hashed << std::endl;
+                std::cout << "Yeay " << abc++ << std::endl;
+                cracked.push_back(a_saved[a_hashed] + temp_b);
+            }
+            b += a;
+        }
+    }
+
+    //------------------------------------
+
+    /*
+
+    for (auto const &a_pair : a_saved)
+    {
+        //njjhd
+        // passw
+        //b**2 = c**2 - a**2
+        Key b_hashed = c - a_pair.first;
+
+        if (subset_sum(map2[b_hashed] + a_pair.first, table) == c)
+        {
+            std::cout << "Difference betwwen c and a " << b_hashed << std::endl;
+            std::cout << "Yeay " << abc++ << std::endl;
+            cracked.push_back(a_pair.first + map2[b_hashed]);
+        }
+    }*/
+
     for (auto &&i : cracked)
     {
         std::cout << i << std::endl;
