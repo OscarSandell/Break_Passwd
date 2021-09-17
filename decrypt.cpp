@@ -3,10 +3,13 @@
 #include <string>
 #include "key.h"
 #include <map>
+#include <unordered_map>
 #include <math.h>
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <functional>
+
 using namespace std;
 
 /*
@@ -16,12 +19,41 @@ Decrypt funktion
 
 #define dela_upp_mitten false
 
+template<> struct std::hash<Key>
+{
+   // size_t operator()(const Key & arg)const{return 0;}
+
+    //0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+    size_t operator()(const Key & arg)const
+    {
+        size_t divisior{static_cast<size_t>(std::pow(2, static_cast<int>(N / 2)))};
+        //divisior /= 10;
+
+        size_t place{};
+        size_t temp{};
+        for (int i{}; i < C; i++)
+        {
+            temp *= arg.digit[i];
+        }
+        
+        place = temp % divisior;
+
+        return place;
+    }
+
+};
+
 void decrypt(const Key &c, Key *table)
 {
     //Vi skapar en map för a som håller koll på a:s nycklar och de hashade lösenorden för de nycklarna
-    std::map<Key, Key> a_saved;
+    //std::map<Key, Key> a_saved;
+    
+    std::vector<Key> keychain{};
+
+    std::unordered_map<Key,std::vector<Key>> a_saved{};
+    
     std::vector<Key> cracked{};
-    //std::set<Key> cracked{};
     Key a{};
     Key b{};
 //Vi räknar ut all kopmbinationer för a
@@ -29,8 +61,8 @@ void decrypt(const Key &c, Key *table)
 #if dela_upp_mitten == false
     for (int i = 0; i < std::pow(2, static_cast<int>(N / 2)); i++)
     {
-        std::cout << "kombination " << i << "   a\t" << a << std::endl;
-        a_saved[subset_sum(a, table)] = a;
+        //std::cout << "kombination " << i << "   a\t" << a << std::endl;
+        a_saved[subset_sum(a, table)].push_back(a);
         a++;
     }
 #else
@@ -41,25 +73,13 @@ void decrypt(const Key &c, Key *table)
         a++;
     }
 #endif
+        std::cout << "a_saved " << a_saved.size() << std::endl;
 
     //Här vill vi räkna ut kombinationerna för b
     Key minus1lol{};
     minus1lol++;
     std::map<Key, Key> map2;
 
-    /* 000000000000100000000000 - 1
-    000000000000011111111111
-
-    000000000001 000000000000 + 1
-    000000000001 000000000001
-    ...
-    000000000010 000000000000  
-    000000000011 000000000000
-    000000000100 000000000000
-    000000000101 000000000000
-    000000000110 000000000000
-    000000000111 000000000000
-    000000001000 000000000000 */
     int abc{};
     //-----------------------------------testar
 
@@ -76,18 +96,17 @@ void decrypt(const Key &c, Key *table)
                 temp_b.digit[var] = 0;
             }
 
-            std::cout << "kombination " << i << "   b\t" << b << "temp_b " << temp_b << std::endl;
-            //   map2[subset_sum(temp_b, table)] = temp_b;
+            //std::cout << "kombination " << i << "   b\t" << b << "temp_b " << temp_b << std::endl;
             Key a_hashed = c - subset_sum(temp_b, table);
 
-            if (subset_sum(a_saved[a_hashed] + temp_b, table) == c)
-            {
-                std::cout << "Difference betwwen c and b " << a_hashed << std::endl;
-                std::cout << "Yeay " << abc++ << std::endl;
-                cracked.push_back(a_saved[a_hashed] + temp_b);
-                //cracked[a_saved[a_hashed] + temp_b];
-                //cracked.insert(a_saved[a_hashed] + temp_b);
-            }
+                auto it = a_saved.find(a_hashed);
+                if (it != a_saved.end())
+                {
+                    for (auto const &i : it->second)
+                    {
+                        cracked.push_back(i + temp_b);
+                    }
+                }
             b += a;
         }
     else
@@ -187,56 +206,26 @@ void decrypt(const Key &c, Key *table)
             }
 #endif
 
-            //std::cout << "kombination " << i << "b\t" << b << "\ttemp_b " << temp_b << std::endl;
-            map2[subset_sum(temp_b, table)] = temp_b;
-
-            Key a_hashed = c - subset_sum(temp_b, table);
-
-            if (subset_sum(a_saved[a_hashed] + temp_b, table) == c)
-            //if(a_saved.find(a_hashed) != a_saved.end())
-            {
-                std::cout << "Yeay " << abc++ << std::endl;
-                cracked.push_back(a_saved[a_hashed] + temp_b);
-               // std::cout << a_saved[a_hashed] + temp_b << std::endl;
-                //cracked.insert(a_saved[a_hashed] + temp_b);
-            }
+            //std::cout << "kombination " << i << "b\t" << b << "\ttemp_b " << temp_b <<  " Hashed " << subset_sum(temp_b, table) << std::endl;
+                Key a_hashed = c - subset_sum(temp_b, table);
+                auto it = a_saved.find(a_hashed);
+                if (it != a_saved.end())
+                {
+                    for (auto const &i : it->second)
+                    {
+                        cracked.push_back(i + temp_b);
+                    }
+                }
+        
             b += a;
         }
     }
 
-/*
-    for (auto const &a_pair : a_saved)
-    {
-        //njjhd
-        // passw
-        //b**2 = c**2 - a**2
-        Key b_hashed = c - a_pair.first;
-        if (subset_sum(map2[b_hashed] + a_pair.second, table) == c)
-        {
-            //std::cout << "Difference betwwen c and a " << b_hashed << std::endl;
-            std::cout << "Yeay " << abc++ << std::endl;
-            std::cout << a_pair.second + map2[b_hashed] << std::endl;
+        std::cout << "a_saved " << a_saved.size() << std::endl;
 
-            cracked.push_back(a_pair.first + map2[b_hashed]);
-            //cracked.insert(a_pair.second + map2[b_hashed]);
-        }
-    }*/
 
     /*
-    for (auto &&i : a_saved)
-    {
-            Key b_hashed = c - i.first;
-
-            if (subset_sum(a_saved[a_hashed] + i.second, table) == c)
-            {
-                std::cout << "Yeay " << abc++ << std::endl;
-                cracked.insert(a_saved[a_hashed] + i.second);
-            } 
-    }
-    */
-
-    /*
-  passwd  15  0 18 18 22  3   011110000010010100101011000011
+   passwd  15  0 18 18 22  3   011110000010010100101011000011
  1 emqvwg   4 12 16 21 22  6   001000110010000101011011000110
  2 klpepn  10 11 15  4 15 13   010100101101111001000111101101
  3 dinngo   3  8 13 13  6 14   000110100001101011010011001110
@@ -258,15 +247,12 @@ password  15  0 18 18 22 14 17  3   0111100000100101001010110011101000100011
 xvbyofnz  23 21  1 24 14  5 13 25   1011110101000011100001110001010110111001
 1p1ngsgg  27 15 27 13  6 18  6  6   1101101111110110110100110100100011000110
 
+    C*2 - a**2 =b**2
 
 
 */
     //------------------------------------
-/*
-    std::cout << "\n\n\n";
 
-    std::sort(cracked.begin(), cracked.end());
-    std::unique(cracked.begin(), cracked.end());*/
     for (auto &&i : cracked)
     {
         std::cout << i << std::endl;
