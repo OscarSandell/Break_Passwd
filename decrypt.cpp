@@ -9,7 +9,7 @@
 #include <set>
 #include <algorithm>
 #include <functional>
-
+#include <sstream>
 using namespace std;
 
 /*
@@ -19,40 +19,40 @@ Decrypt funktion
 
 #define dela_upp_mitten false
 
-template<> struct std::hash<Key>
-{
-   // size_t operator()(const Key & arg)const{return 0;}
-
-    //0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-
-    size_t operator()(const Key & arg)const
+ string to_string_from_key(const Key & arg)
     {
-        size_t divisior{static_cast<size_t>(std::pow(2, static_cast<int>(N / 2)))};
-        //divisior /= 10;
-
-        size_t place{};
-        size_t temp{};
-        for (int i{}; i < C; i++)
+        std::stringstream ss{};
+        for (int i{0}; i < N; i++)
         {
-            temp *= arg.digit[i];
+            ss << arg.bit(i);
         }
-        
-        place = temp % divisior;
+        return ss.str();
 
-        return place;
     }
 
+template <>
+struct std::hash<Key>
+{
+    size_t operator()(const Key & arg)const
+    {
+        size_t value = std::hash<string>{}(to_string_from_key(arg));
+
+        return value;
+    }
+   
 };
+
+
 
 void decrypt(const Key &c, Key *table)
 {
     //Vi skapar en map för a som håller koll på a:s nycklar och de hashade lösenorden för de nycklarna
     //std::map<Key, Key> a_saved;
-    
+
     std::vector<Key> keychain{};
 
-    std::unordered_map<Key,std::vector<Key>> a_saved{};
-    
+    std::unordered_map<Key, std::vector<Key>> a_saved{};
+
     std::vector<Key> cracked{};
     Key a{};
     Key b{};
@@ -73,7 +73,7 @@ void decrypt(const Key &c, Key *table)
         a++;
     }
 #endif
-        std::cout << "a_saved " << a_saved.size() << std::endl;
+    std::cout << "a_saved " << a_saved.size() << std::endl;
 
     //Här vill vi räkna ut kombinationerna för b
     Key minus1lol{};
@@ -99,14 +99,14 @@ void decrypt(const Key &c, Key *table)
             //std::cout << "kombination " << i << "   b\t" << b << "temp_b " << temp_b << std::endl;
             Key a_hashed = c - subset_sum(temp_b, table);
 
-                auto it = a_saved.find(a_hashed);
-                if (it != a_saved.end())
+            auto it = a_saved.find(a_hashed);
+            if (it != a_saved.end())
+            {
+                for (auto const &i : it->second)
                 {
-                    for (auto const &i : it->second)
-                    {
-                        cracked.push_back(i + temp_b);
-                    }
+                    cracked.push_back(i + temp_b);
                 }
+            }
             b += a;
         }
     else
@@ -207,22 +207,21 @@ void decrypt(const Key &c, Key *table)
 #endif
 
             //std::cout << "kombination " << i << "b\t" << b << "\ttemp_b " << temp_b <<  " Hashed " << subset_sum(temp_b, table) << std::endl;
-                Key a_hashed = c - subset_sum(temp_b, table);
-                auto it = a_saved.find(a_hashed);
-                if (it != a_saved.end())
+            Key a_hashed = c - subset_sum(temp_b, table);
+            auto it = a_saved.find(a_hashed);
+            if (it != a_saved.end())
+            {
+                for (auto const &i : it->second)
                 {
-                    for (auto const &i : it->second)
-                    {
-                        cracked.push_back(i + temp_b);
-                    }
+                    cracked.push_back(i + temp_b);
                 }
-        
+            }
+
             b += a;
         }
     }
 
-        std::cout << "a_saved " << a_saved.size() << std::endl;
-
+    std::cout << "a_saved " << a_saved.size() << std::endl;
 
     /*
    passwd  15  0 18 18 22  3   011110000010010100101011000011
