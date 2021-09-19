@@ -2,7 +2,6 @@
 #define KEY_H
 
 #include <iostream>
-
 #define C 5         // number of characters in password
 #define B 5         // number of bits per character
 #define R (1 << B)  // size of alphabet (32)

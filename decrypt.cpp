@@ -20,11 +20,11 @@ Decrypt funktion
 string to_string_from_key(const Key &arg)
 {
     std::stringstream ss{};
-    for (int i{0}; i < N; i++)
-    {
-        ss << arg.bit(i);
-    }
-    return ss.str();
+        for (int i{0}; i < N; i++)
+        {
+            ss << arg.bit(i);
+        }
+        return ss.str();
 }
 
 template <>
@@ -32,10 +32,8 @@ struct std::hash<Key>
 {
     size_t operator()(const Key &arg) const
     {
-        size_t value = std::hash<string>{}(to_string_from_key(arg));
-
-        return value;
-    }
+        return std::hash<string>{}(to_string_from_key(arg));    }
+        
 };
 
 void decrypt(const Key &c, Key *table)
@@ -56,7 +54,7 @@ void decrypt(const Key &c, Key *table)
         a++;
     }
 
-    std::cout << "a_saved " << a_saved.size() << std::endl;
+   // std::cout << "a_saved " << a_saved.size() << std::endl;
 
     //Här vill vi räkna ut kombinationerna för b
     std::map<Key, Key> map2;
@@ -110,8 +108,6 @@ int main(int argc, char *argv[])
         table[i] = Key{buffer.c_str()};
     }
 
-    std::cout << "Det hashade: \n"
-              << hashed << std::endl;
     auto begin = chrono::high_resolution_clock::now();
 
     // Find all possible passwords that hash to 'hashed' and print them.
