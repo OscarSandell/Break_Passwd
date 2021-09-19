@@ -27,15 +27,80 @@ string to_string_from_key(const Key &arg)
     return ss.str();
 }
 
+
+
+
+ #include <thread>
+ #include <bitset>
 template <>
 struct std::hash<Key>
 {
+    /*size_t operator()(const Key &arg) const
+    {
+        return std::hash<string>{}(to_string_from_key(arg));
+    }*/
+    /*
     size_t operator()(const Key &arg) const
     {
-        size_t value = std::hash<string>{}(to_string_from_key(arg));
-
+        size_t value{};
+        for (int i = 0; i < C; i++)
+        {
+            value = value + (arg.digit[i] + 1) * 3;
+        }
+        value = value % static_cast<size_t>(std::pow(2, N / 2.0)*1.3);
         return value;
     }
+    */
+  
+  
+    size_t operator()(const Key &arg) const
+    {   
+        
+
+        size_t value{};
+        for (int i = 0; i < N; i++)
+        {
+            if (arg.bit(i) == 1)
+            {   
+                        
+                value += i << i;
+              //  value += i << 1;
+                
+            }
+            //else
+           // {
+             //   value += i << 0;
+            //}
+
+                                  // std::cout << std::bitset<16>(value) << std::endl;
+
+
+        }
+        //std::this_thread::sleep_for (std::chrono::seconds(2));
+        return value;
+    }
+     /*size_t operator()(const Key &arg) const
+    {   
+        
+
+        size_t value{};
+        for (int i = 1; i < C+1; i++)
+        {
+            for (int a{1}; a < C+1; a++)
+            {
+                if(arg.bit(a*i))
+                value += value << 1;
+                else
+                value += value << 0;
+            }
+            
+                                 //  std::cout << std::bitset<16>(value) << std::endl;
+
+
+        }
+        //std::this_thread::sleep_for (std::chrono::seconds(2));
+        return value;
+    }*/
 };
 
 void decrypt(const Key &c, Key *table)
@@ -56,13 +121,13 @@ void decrypt(const Key &c, Key *table)
         a++;
     }
 
-    std::cout << "a_saved " << a_saved.size() << std::endl;
+    //Räkna antalet kollisioner
 
     //Här vill vi räkna ut kombinationerna för b
     std::map<Key, Key> map2;
     //-----------------------------------testar
 
-    for (int i = 0; i < static_cast<int>(std::pow(2,std::ceil( N / 2.0))); i++)
+    for (int i = 0; i < static_cast<int>(std::pow(2, std::ceil(N / 2.0))); i++)
     {
         //std::cout << "kombination " << i << "   b\t" << b << std::endl;
         Key a_hashed = c - subset_sum(b, table);
@@ -109,9 +174,6 @@ int main(int argc, char *argv[])
         }
         table[i] = Key{buffer.c_str()};
     }
-
-    std::cout << "Det hashade: \n"
-              << hashed << std::endl;
     auto begin = chrono::high_resolution_clock::now();
 
     // Find all possible passwords that hash to 'hashed' and print them.
