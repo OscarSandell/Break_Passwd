@@ -3,7 +3,7 @@
  **********************************************************************/
 
  Ungefärligt antal timmar spenderade på labben (valfritt):
- 8 timmar ungefär
+ 10 timmar ungefär
 
 /**********************************************************************
  *  Ge en högnivåbeskrivning av ditt program decrypt.c.
@@ -47,7 +47,7 @@ Char     Brute
  4       0s (0,059 s)
  5       1s (1,887 s)
  6       76s (75,25 s)
- 8       * tidskomplexiteten är ca O(2^n) vilket gör att för varje extra bokstav så måste man multiplöicera tiden med *32 vilket innebör att det tar va 21,33333 h att brutea proggrammet
+ 8       * tidskomplexiteten är ca O(2^n) vilket gör att för varje extra bokstav så måste man multiplöicera tiden med *32 vilket innebör att det tar ca 21,33333 h att brutea programmet
 
 
 /******************************************************************************
